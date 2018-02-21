@@ -2,6 +2,8 @@
 #define FRONTEND_HPP
 
 #include <QMainWindow>
+#include "plot.hpp"
+#include "specwaterfall.hpp"
 
 namespace Ui {
 class FrontEnd;
@@ -16,7 +18,10 @@ public:
     ~FrontEnd();
 
 private:
-    Ui::FrontEnd *ui;
+    Ui::FrontEnd    *ui;
+    Plot            *spectrumPlot;
+    Plot            *phasePlot;
+    SpecWaterfall   *spectrumWaterfall;
 };
 
 #endif // FRONTEND_HPP

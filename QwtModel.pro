@@ -27,10 +27,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        frontend.cpp
+        frontend.cpp \
+    plot.cpp \
+    specwaterfall.cpp
 
 HEADERS += \
-        frontend.hpp
+        frontend.hpp \
+    plot.hpp \
+    specwaterfall.hpp
 
 FORMS += \
         frontend.ui
