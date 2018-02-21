@@ -22,8 +22,8 @@ public:
     SpecWaterfall(QWidget *parent);
 
     /* Hints for resize QwtPlot */
-    QSize sizeHint() const { return QSize(50, 50); }
-    QSize minimumSizeHint() const { return QSize(50, 50); }
+    QSize sizeHint() const { return QSize(700, 200); }
+    QSize minimumSizeHint() const { return QSize(700, 200); }
 
 private:
     QwtPlotSpectrogram  *plot;

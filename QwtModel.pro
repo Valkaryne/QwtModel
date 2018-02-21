@@ -29,12 +29,14 @@ SOURCES += \
         main.cpp \
         frontend.cpp \
     plot.cpp \
-    specwaterfall.cpp
+    specwaterfall.cpp \
+    polarplot.cpp
 
 HEADERS += \
         frontend.hpp \
     plot.hpp \
-    specwaterfall.hpp
+    specwaterfall.hpp \
+    polarplot.hpp
 
 FORMS += \
         frontend.ui

@@ -58,5 +58,4 @@ SpecWaterfall::SpecWaterfall(QWidget *parent) :
     plotData->setValueMatrix(*vec, 1024);
     plot->setData(plotData);
     plot->attach(this);
-
 }
