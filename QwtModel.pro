@@ -32,7 +32,8 @@ SOURCES += \
     specwaterfall.cpp \
     polarplot.cpp \
     udpchannel.cpp \
-    pseudoudpchannel.cpp
+    pseudoudpchannel.cpp \
+    backend.cpp
 
 HEADERS += \
         frontend.hpp \
@@ -40,7 +41,8 @@ HEADERS += \
     specwaterfall.hpp \
     polarplot.hpp \
     udpchannel.hpp \
-    pseudoudpchannel.hpp
+    pseudoudpchannel.hpp \
+    backend.hpp
 
 FORMS += \
         frontend.ui

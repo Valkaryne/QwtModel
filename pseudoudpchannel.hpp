@@ -3,6 +3,9 @@
 
 #include <QTimer>
 
+constexpr double BAND = 255;
+constexpr double BAND2 = 253;
+
 class PseudoUdpChannel : public QObject
 {
     Q_OBJECT

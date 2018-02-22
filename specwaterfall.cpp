@@ -33,7 +33,7 @@ SpecWaterfall::SpecWaterfall(QWidget *parent) :
     /* Plot Data */
     plotData = new QwtMatrixRasterData();
     plotData->setResampleMode(QwtMatrixRasterData::ResampleMode::BilinearInterpolation);
-    plotData->setInterval(Qt::XAxis, QwtInterval(0, 4096, QwtInterval::ExcludeMaximum));
+    plotData->setInterval(Qt::XAxis, QwtInterval(0, 4095, QwtInterval::ExcludeMaximum));
     plotData->setInterval( Qt::YAxis, QwtInterval(0, 100, QwtInterval::ExcludeMaximum));
     plotData->setInterval(Qt::ZAxis, QwtInterval(0, 100));
 
@@ -58,4 +58,17 @@ SpecWaterfall::SpecWaterfall(QWidget *parent) :
     plotData->setValueMatrix(*vec, 1024);
     plot->setData(plotData);
     plot->attach(this);
+}
+
+void SpecWaterfall::updateSpectrogram(const QVector<double> samplesAm1, const QVector<double> samplesAm2)
+{
+    vec->remove(0, samplesAm1.size() / 4);
+
+    for (int i = 0; i < samplesAm1.size(); i += 4)
+        vec->append(samplesAm1.at(i));
+
+    plotData->setInterval(Qt::XAxis, QwtInterval(cntrFrequency - LSHIFT, cntrFrequency + RSHIFT, QwtInterval::ExcludeMaximum));
+    plotData->setValueMatrix(*vec, 1024);
+    plot->setData(plotData);
+    replot();
 }

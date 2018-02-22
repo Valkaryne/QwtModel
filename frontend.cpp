@@ -7,6 +7,9 @@ FrontEnd::FrontEnd(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    backEnd = new BackEnd();
+    connect(this, SIGNAL(destroyed()), backEnd, SLOT(quit()));
+
     /* Create spectrum plot, phase plot and waterfall objects */
 
     QHBoxLayout *spLayout = new QHBoxLayout();
@@ -35,9 +38,25 @@ FrontEnd::FrontEnd(QWidget *parent) :
     polarPlot = new PolarPlot(this);
     polarPlot->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     ui->polarLayout->addWidget(polarPlot);
+
+    backEnd->moveToThread(backEnd);
+
+    connect(backEnd, SIGNAL(amplitudeSamplesReady(QVector<double>,QVector<double>)),
+            this->spectrumPlot, SLOT(updateCurve(QVector<double>,QVector<double>)));
+    connect(backEnd, SIGNAL(amplitudeSamplesReady(QVector<double>,QVector<double>)),
+            this->spectrumWaterfall, SLOT(updateSpectrogram(QVector<double>,QVector<double>)));
+    connect(backEnd, SIGNAL(phaseSamplesReady(QVector<double>)),
+            this->phasePlot, SLOT(updateCurve(QVector<double>)));
+
+    backEnd->start();
+
+    pseudoUdpChannel = new PseudoUdpChannel(10, this);
+    connect(pseudoUdpChannel, SIGNAL(pseudoSamplesReceived(QVector<double>,QVector<double>,QVector<double>)),
+            backEnd, SLOT(samplesHandler(QVector<double>,QVector<double>,QVector<double>)));
 }
 
 FrontEnd::~FrontEnd()
 {
+    //delete backEnd;
     delete ui;
 }
