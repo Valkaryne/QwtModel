@@ -2,6 +2,9 @@
 #define FRONTEND_HPP
 
 #include <QMainWindow>
+#include "plot.hpp"
+#include "specwaterfall.hpp"
+#include "polarplot.hpp"
 
 namespace Ui {
 class FrontEnd;
@@ -16,7 +19,11 @@ public:
     ~FrontEnd();
 
 private:
-    Ui::FrontEnd *ui;
+    Ui::FrontEnd    *ui;
+    Plot            *spectrumPlot;
+    Plot            *phasePlot;
+    SpecWaterfall   *spectrumWaterfall;
+    PolarPlot       *polarPlot;
 };
 
 #endif // FRONTEND_HPP
