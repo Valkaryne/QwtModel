@@ -31,14 +31,16 @@ SOURCES += \
     plot.cpp \
     specwaterfall.cpp \
     polarplot.cpp \
-    udpchannel.cpp
+    udpchannel.cpp \
+    pseudoudpchannel.cpp
 
 HEADERS += \
         frontend.hpp \
     plot.hpp \
     specwaterfall.hpp \
     polarplot.hpp \
-    udpchannel.hpp
+    udpchannel.hpp \
+    pseudoudpchannel.hpp
 
 FORMS += \
         frontend.ui
