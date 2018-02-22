@@ -25,6 +25,9 @@ public:
     QSize sizeHint() const { return QSize(700, 200); }
     QSize minimumSizeHint() const { return QSize(700, 200); }
 
+public slots:
+    void updateSpectrogram(const QVector<double> samplesAm1, const QVector<double> samplesAm2);
+
 private:
     QwtPlotSpectrogram  *plot;
     QwtMatrixRasterData *plotData;

@@ -27,6 +27,15 @@ public:
     QSize sizeHint() const { return QSize(700, 200); }
     QSize minimumSizeHint() const { return QSize(700, 200); }
 
+public slots:
+    void updateCurve(const QVector<double> &samplesPh);
+    void updateCurve(const QVector<double> &samplesAm1, const QVector<double> &samplesAm2);
+
+private:
+    QwtPlotCurve *curve1;
+    QwtPlotCurve *curve2;
+
+    double cntrFrequency;
 };
 
 #endif // PLOT_HPP

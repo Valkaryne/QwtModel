@@ -5,6 +5,8 @@
 #include "plot.hpp"
 #include "specwaterfall.hpp"
 #include "polarplot.hpp"
+#include "backend.hpp"
+#include "pseudoudpchannel.hpp"
 
 namespace Ui {
 class FrontEnd;
@@ -18,12 +20,16 @@ public:
     explicit FrontEnd(QWidget *parent = 0);
     ~FrontEnd();
 
+private slots:
+
 private:
     Ui::FrontEnd    *ui;
+    BackEnd         *backEnd;
     Plot            *spectrumPlot;
     Plot            *phasePlot;
     SpecWaterfall   *spectrumWaterfall;
     PolarPlot       *polarPlot;
+    PseudoUdpChannel    *pseudoUdpChannel;
 };
 
 #endif // FRONTEND_HPP
