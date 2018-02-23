@@ -26,6 +26,16 @@ public:
     /* Hints for resize QwtPlot */
     QSize sizeHint() const { return QSize(700, 200); }
     QSize minimumSizeHint() const { return QSize(700, 200); }
+    /* Setters */
+    void setMarker(int number);
+    void setPickers(bool enable);
+    void setCentralFrequency(double cntrFrequency);
+    /* Getters */
+    QwtPlotPicker* getMarkerPicker(bool prime);
+    QVector<int> getMarkerBounds();
+    /* Others */
+    void resetMarkers();
+    void moveMarker(double position, bool prime);
 
 public slots:
     void updateCurve(const QVector<double> &samplesPh);
@@ -34,7 +44,15 @@ public slots:
 private:
     QwtPlotCurve *curve1;
     QwtPlotCurve *curve2;
+    QwtPlotPicker *pickerMarkPr;
+    QwtPlotPicker *pickerMarkSec;
+    QwtPlotMarker *markerPr;
+    QwtPlotMarker *markerSec;
 
+    QVector<QwtPlotMarker*> markerVector;
+    QVector<QColor> colors;
+
+    int markPairNmr;
     double cntrFrequency;
 };
 

@@ -456,7 +456,7 @@ QRadioButton::indicator::checked {
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox">
+             <widget class="QDoubleSpinBox" name="frequencySpinBox">
               <property name="maximumSize">
                <size>
                 <width>80</width>
@@ -513,7 +513,7 @@ QRadioButton::indicator::checked {
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+             <widget class="QDoubleSpinBox" name="gainSpinBox">
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
@@ -557,7 +557,7 @@ QRadioButton::indicator::checked {
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+             <widget class="QDoubleSpinBox" name="alpha1SpinBox">
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
@@ -576,7 +576,7 @@ QRadioButton::indicator::checked {
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+             <widget class="QDoubleSpinBox" name="alpha2SpinBox">
               <property name="maximumSize">
                <size>
                 <width>16777215</width>

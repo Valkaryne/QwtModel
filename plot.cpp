@@ -1,4 +1,5 @@
 #include "plot.hpp"
+#include <algorithm>
 
 Plot::Plot(QWidget *parent)
     : QwtPlot(parent)
@@ -37,9 +38,125 @@ Plot::Plot(QWidget *parent)
     curve2->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
     curve2->attach(this);
 
+    /* Pickers */
+    pickerMarkPr = new QwtPlotPicker(
+                QwtPlot::xBottom, QwtPlot::yLeft,
+                QwtPlotPicker::VLineRubberBand,
+                QwtPicker::AlwaysOn,
+                canvas);
+    pickerMarkPr->setRubberBandPen(QColor(Qt::red));
+    pickerMarkPr->setTrackerPen(QColor(Qt::white));
+    pickerMarkPr->setStateMachine(new QwtPickerDragPointMachine());
+    pickerMarkPr->setMousePattern(QwtPlotPicker::MouseSelect1, Qt::LeftButton);
+
+    pickerMarkSec = new QwtPlotPicker(
+                QwtPlot::xBottom, QwtPlot::yLeft,
+                QwtPlotPicker::VLineRubberBand,
+                QwtPicker::AlwaysOn,
+                canvas);
+    pickerMarkSec->setRubberBandPen(QColor(Qt::red));
+    pickerMarkSec->setTrackerPen(QColor(Qt::white));
+    pickerMarkSec->setStateMachine(new QwtPickerDragPointMachine());
+    pickerMarkSec->setMousePattern(QwtPlotPicker::MouseSelect1, Qt::RightButton);
+
+    /* Colors */
+    colors = {
+        *new QColor(220,20,75), /* crimson */
+        *new QColor(11,218,81), /* malachite */
+        *new QColor(127,199,255), /* skiey */
+        *new QColor(255,153,0), /* orange */
+        *new QColor(255,170,204), /* rose */
+    };
+
     /* Other settings */
 
     this->cntrFrequency = 70;
+
+    for(int i = 1; i < 6; i++)
+        setMarker(i);
+
+    this->markPairNmr = 1;
+}
+
+void Plot::setMarker(int number)
+{
+    if (markerVector.size() < number * 2)
+    {
+        markerPr = new QwtPlotMarker();
+        markerPr->setLineStyle(QwtPlotMarker::VLine);
+        markerPr->setLinePen(colors.at((number - 1) % colors.size()), 2, Qt::SolidLine);
+        markerPr->setValue(cntrFrequency - 15.45, 0);
+        markerPr->attach(this);
+
+        markerSec = new QwtPlotMarker();
+        markerSec->setLineStyle(QwtPlotMarker::VLine);
+        markerSec->setLinePen(colors.at((number - 1) % colors.size()), 2, Qt::SolidLine);
+        markerSec->setValue(cntrFrequency + 15.27, 0);
+        markerSec->attach(this);
+
+        markerVector.append(markerPr);
+        markerVector.append(markerSec);
+    }
+    markPairNmr = number * 2 - 1;
+}
+
+void Plot::setPickers(bool enable)
+{
+    pickerMarkPr->setEnabled(enable);
+    pickerMarkSec->setEnabled(enable);
+}
+
+void Plot::setCentralFrequency(double cntrFrequency)
+{
+    if (this->cntrFrequency != cntrFrequency)
+    {
+        this->cntrFrequency = cntrFrequency;
+        resetMarkers();
+    }
+    double xleft = cntrFrequency - SHIFT;
+    double xright = cntrFrequency + (30.72 - SHIFT);
+    setAxisScale(QwtPlot::xBottom, xleft, xright);
+    // TODO: Set Zoom Base
+    /* Set Zoom Base */
+}
+
+QwtPlotPicker* Plot::getMarkerPicker(bool prime)
+{
+    if (prime)
+        return pickerMarkPr;
+    else
+        return pickerMarkSec;
+}
+
+QVector<int> Plot::getMarkerBounds()
+{
+    QVector<int> bounds;
+    for (int i = 1; i < markerVector.size(); i += 2)
+    {
+        double bound = markerVector.value(i-1)->xValue();
+        bounds.append(2060 + (bound - cntrFrequency) / INCR);
+        bound = markerVector.value(i)->xValue();
+        bounds.append(2060 + (bound - cntrFrequency) / INCR);
+        qSort(bounds.end() - 2, bounds.end());
+    }
+    return bounds;
+}
+
+void Plot::resetMarkers()
+{
+    for (int i = 1; i < markerVector.size(); i += 2)
+    {
+        markerVector.value(i - 1)->setValue(cntrFrequency - 15.45, 0);
+        markerVector.value(i)->setValue(cntrFrequency + 15.27, 0);
+    }
+}
+
+void Plot::moveMarker(double position, bool prime)
+{
+    if (prime)
+        markerVector.at(markPairNmr - 1)->setValue(position, 0);
+    else
+        markerVector.at(markPairNmr)->setValue(position, 0);
 }
 
 void Plot::updateCurve(const QVector<double> &samplesPh)

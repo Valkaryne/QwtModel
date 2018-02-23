@@ -60,6 +60,16 @@ SpecWaterfall::SpecWaterfall(QWidget *parent) :
     plot->attach(this);
 }
 
+void SpecWaterfall::setCentralFrequency(double cntrFrequency)
+{
+    if (this->cntrFrequency != cntrFrequency)
+        this->cntrFrequency = cntrFrequency;
+
+    double xleft = cntrFrequency - LSHIFT;
+    double xright = cntrFrequency + RSHIFT;
+    setAxisScale(QwtPlot::xBottom, xleft, xright);
+}
+
 void SpecWaterfall::updateSpectrogram(const QVector<double> samplesAm1, const QVector<double> samplesAm2)
 {
     vec->remove(0, samplesAm1.size() / 4);

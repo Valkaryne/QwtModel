@@ -25,6 +25,7 @@ FrontEnd::FrontEnd(QWidget *parent) :
     spLayout->addSpacing(12);
     spLayout->addWidget(spectrumPlot);
     ui->spectrumLayout->addLayout(spLayout);
+    spectrumPlot->setPickers(false);
 
     phasePlot = new Plot(this);
     phasePlot->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -34,6 +35,7 @@ FrontEnd::FrontEnd(QWidget *parent) :
     ui->spectrumLayout->addLayout(phLayout);
     phasePlot->setAxisTitle(QwtPlot::yLeft, "Phase");
     phasePlot->setAxisScale(QwtPlot::yLeft, 0, 360, 90);
+    phasePlot->setPickers(false);
 
     polarPlot = new PolarPlot(this);
     polarPlot->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -53,10 +55,59 @@ FrontEnd::FrontEnd(QWidget *parent) :
     pseudoUdpChannel = new PseudoUdpChannel(10, this);
     connect(pseudoUdpChannel, SIGNAL(pseudoSamplesReceived(QVector<double>,QVector<double>,QVector<double>)),
             backEnd, SLOT(samplesHandler(QVector<double>,QVector<double>,QVector<double>)));
+
+    connect(spectrumPlot->getMarkerPicker(true), SIGNAL(appended(const QPoint &)),
+            this, SLOT(leftClickOnCanvas(const QPoint &)));
+    connect(spectrumPlot->getMarkerPicker(false), SIGNAL(appended(const QPoint &)),
+            this, SLOT(rightClickOnCanvas(const QPoint &)));
 }
 
 FrontEnd::~FrontEnd()
 {
     //delete backEnd;
     delete ui;
+}
+
+void FrontEnd::leftClickOnCanvas(const QPoint &pos)
+{
+    double xleft = spectrumPlot->invTransform(QwtPlot::xBottom, pos.x());
+    spectrumPlot->moveMarker(xleft, true);
+}
+
+void FrontEnd::rightClickOnCanvas(const QPoint &pos)
+{
+    double xright = spectrumPlot->invTransform(QwtPlot::xBottom, pos.x());
+    spectrumPlot->moveMarker(xright, false);
+}
+
+void FrontEnd::on_applyBtn_clicked()
+{
+    spectrumPlot->setCentralFrequency(ui->frequencySpinBox->value());
+    phasePlot->setCentralFrequency(ui->frequencySpinBox->value());
+    spectrumWaterfall->setCentralFrequency(ui->frequencySpinBox->value());
+    QVector<int> bounds = spectrumPlot->getMarkerBounds();
+    qDebug() << bounds;
+}
+
+void FrontEnd::on_buttonGroupMode_buttonClicked(QAbstractButton *button)
+{
+    QString name = button->text();
+    if (name == "Markers")
+    {
+        spectrumPlot->setPickers(true);
+    }
+    else if (name == "Zoom")
+    {
+
+    }
+    else if (name == "Threshold")
+    {
+
+    }
+}
+
+void FrontEnd::on_buttonGroupMarkers_buttonClicked(QAbstractButton *button)
+{
+    int number = button->text().toInt();
+    spectrumPlot->setMarker(number);
 }
