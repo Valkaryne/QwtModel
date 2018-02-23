@@ -31,6 +31,8 @@ private slots:
     /* Canvas signals */
     void leftClickOnCanvas(const QPoint &pos);
     void rightClickOnCanvas(const QPoint &pos);
+    void thresholdPrChosen(const QPoint &pos);
+    void thresholdSecChosen(const QPoint &pos);
 
     /* Buttons */
     void on_applyBtn_clicked();

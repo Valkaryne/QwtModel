@@ -29,15 +29,19 @@ public:
     /* Setters */
     void setMarker(int number);
     void setPickers(bool enable);
+    void setThresholdPickers(bool enable);
     void setZoomer(bool enable);
     void setCentralFrequency(double cntrFrequency);
     /* Getters */
     QwtPlotPicker* getMarkerPicker(bool prime);
+    QwtPlotPicker* getThreshPicker(bool prime);
     QwtPlotZoomer* getZoomer();
     QVector<int> getMarkerBounds();
+    QVector<int> getThresholdBounds();
     /* Others */
     void resetMarkers();
     void moveMarker(double position, bool prime);
+    void moveThreshold(double position, bool prime);
 
 public slots:
     void updateCurve(const QVector<double> &samplesPh);
@@ -49,8 +53,12 @@ private:
     QwtPlotCurve *curve2;
     QwtPlotPicker *pickerMarkPr;
     QwtPlotPicker *pickerMarkSec;
+    QwtPlotPicker *pickerThrPr;
+    QwtPlotPicker *pickerThrSec;
     QwtPlotMarker *markerPr;
     QwtPlotMarker *markerSec;
+    QwtPlotMarker *thresholdPr;
+    QwtPlotMarker *thresholdSec;
     QwtPlotZoomer   *zoomer;
 
     QVector<QwtPlotMarker*> markerVector;

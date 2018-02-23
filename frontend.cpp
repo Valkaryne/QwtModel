@@ -27,6 +27,7 @@ FrontEnd::FrontEnd(QWidget *parent) :
     ui->spectrumLayout->addLayout(spLayout);
     spectrumPlot->setPickers(false);
     spectrumPlot->setZoomer(true);
+    spectrumPlot->setThresholdPickers(false);
     spectrumPlot->setObjectName("spectrumPlot");
 
     phasePlot = new Plot(this, "phasePlot");
@@ -39,6 +40,7 @@ FrontEnd::FrontEnd(QWidget *parent) :
     phasePlot->setAxisScale(QwtPlot::yLeft, 0, 360, 90);
     phasePlot->setPickers(false);
     phasePlot->setZoomer(false);
+    phasePlot->setThresholdPickers(false);
     phasePlot->setObjectName("phasePlot");
 
     polarPlot = new PolarPlot(this);
@@ -64,6 +66,10 @@ FrontEnd::FrontEnd(QWidget *parent) :
             this, SLOT(leftClickOnCanvas(const QPoint &)));
     connect(spectrumPlot->getMarkerPicker(false), SIGNAL(appended(const QPoint &)),
             this, SLOT(rightClickOnCanvas(const QPoint &)));
+    connect(spectrumPlot->getThreshPicker(true), SIGNAL(appended(const QPoint &)),
+            this, SLOT(thresholdPrChosen(const QPoint &)));
+    connect(spectrumPlot->getThreshPicker(false), SIGNAL(appended(const QPoint &)),
+            this, SLOT(thresholdSecChosen(const QPoint &)));
     connect(spectrumPlot->getZoomer(), SIGNAL(zoomed(const QRectF &)),
             phasePlot, SLOT(equalZoom(const QRectF &)));
 }
@@ -86,13 +92,27 @@ void FrontEnd::rightClickOnCanvas(const QPoint &pos)
     spectrumPlot->moveMarker(xright, false);
 }
 
+void FrontEnd::thresholdPrChosen(const QPoint &pos)
+{
+    double yup = spectrumPlot->invTransform(QwtPlot::yLeft, pos.y());
+    spectrumPlot->moveThreshold(yup, true);
+}
+
+void FrontEnd::thresholdSecChosen(const QPoint &pos)
+{
+    double ylow = spectrumPlot->invTransform(QwtPlot::yLeft, pos.y());
+    spectrumPlot->moveThreshold(ylow, false);
+}
+
 void FrontEnd::on_applyBtn_clicked()
 {
     spectrumPlot->setCentralFrequency(ui->frequencySpinBox->value());
     phasePlot->setCentralFrequency(ui->frequencySpinBox->value());
     spectrumWaterfall->setCentralFrequency(ui->frequencySpinBox->value());
     QVector<int> bounds = spectrumPlot->getMarkerBounds();
-    qDebug() << bounds;
+    QVector<int> thresholds = spectrumPlot->getThresholdBounds();
+    qDebug() << "bounds: " << bounds;
+    qDebug() << "Thresholds: " << thresholds;
 }
 
 void FrontEnd::on_buttonGroupMode_buttonClicked(QAbstractButton *button)
@@ -102,15 +122,19 @@ void FrontEnd::on_buttonGroupMode_buttonClicked(QAbstractButton *button)
     {
         spectrumPlot->setPickers(true);
         spectrumPlot->setZoomer(false);
+        spectrumPlot->setThresholdPickers(false);
     }
     else if (name == "Zoom")
     {
         spectrumPlot->setZoomer(true);
+        spectrumPlot->setThresholdPickers(false);
         spectrumPlot->setPickers(false);
     }
     else if (name == "Threshold")
     {
-        // TODO: Add thresholds feature
+        spectrumPlot->setThresholdPickers(true);
+        spectrumPlot->setPickers(false);
+        spectrumPlot->setZoomer(false);
     }
 }
 

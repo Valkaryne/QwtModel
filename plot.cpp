@@ -62,6 +62,39 @@ Plot::Plot(QWidget *parent, const QString objectName)
     pickerMarkSec->setStateMachine(new QwtPickerDragPointMachine());
     pickerMarkSec->setMousePattern(QwtPlotPicker::MouseSelect1, Qt::RightButton);
 
+    pickerThrPr = new QwtPlotPicker(
+                QwtPlot::xBottom, QwtPlot::yLeft,
+                QwtPlotPicker::VLineRubberBand,
+                QwtPicker::AlwaysOn,
+                canvas);
+    pickerThrPr->setRubberBandPen(QColor(Qt::green));
+    pickerThrPr->setTrackerPen(QColor(Qt::white));
+    pickerThrPr->setStateMachine(new QwtPickerDragPointMachine());
+    pickerThrPr->setMousePattern(QwtPlotPicker::MouseSelect1, Qt::LeftButton);
+
+    pickerThrSec = new QwtPlotPicker(
+                QwtPlot::xBottom, QwtPlot::yLeft,
+                QwtPlotPicker::HLineRubberBand,
+                QwtPicker::AlwaysOn,
+                canvas);
+    pickerThrSec->setRubberBandPen(QColor(Qt::green));
+    pickerThrSec->setTrackerPen(QColor(Qt::white));
+    pickerThrSec->setStateMachine(new QwtPickerDragPointMachine());
+    pickerThrSec->setMousePattern(QwtPlotPicker::MouseSelect1, Qt::RightButton);
+
+    /* Thresholds */
+    thresholdPr = new QwtPlotMarker();
+    thresholdPr->setLineStyle(QwtPlotMarker::HLine);
+    thresholdPr->setLinePen(QColor(Qt::white), 2, Qt::DashLine);
+    thresholdPr->setValue(0, 0);
+    thresholdPr->attach(this);
+
+    thresholdSec = new QwtPlotMarker();
+    thresholdSec->setLineStyle(QwtPlotMarker::HLine);
+    thresholdSec->setLinePen(QColor(Qt::white), 2, Qt::DashLine);
+    thresholdSec->setValue(140, 0);
+    thresholdSec->attach(this);
+
     /* Colors */
     colors = {
         *new QColor(220,20,75), /* crimson */
@@ -118,6 +151,12 @@ void Plot::setPickers(bool enable)
     pickerMarkSec->setEnabled(enable);
 }
 
+void Plot::setThresholdPickers(bool enable)
+{
+    pickerThrPr->setEnabled(enable);
+    pickerThrSec->setEnabled(enable);
+}
+
 void Plot::setZoomer(bool enable)
 {
     zoomer->setEnabled(enable);
@@ -133,7 +172,6 @@ void Plot::setCentralFrequency(double cntrFrequency)
     double xleft = cntrFrequency - SHIFT;
     double xright = cntrFrequency + (30.72 - SHIFT);
     setAxisScale(QwtPlot::xBottom, xleft, xright);
-    // TODO: Set Zoom Base
     /* Set Zoom Base */
     QStack<QRectF> stack = zoomer->zoomStack();
     QRectF base;
@@ -155,6 +193,14 @@ QwtPlotPicker* Plot::getMarkerPicker(bool prime)
         return pickerMarkSec;
 }
 
+QwtPlotPicker* Plot::getThreshPicker(bool prime)
+{
+    if (prime)
+        return pickerThrPr;
+    else
+        return pickerThrSec;
+}
+
 QwtPlotZoomer* Plot::getZoomer()
 {
     return zoomer;
@@ -174,6 +220,15 @@ QVector<int> Plot::getMarkerBounds()
     return bounds;
 }
 
+QVector<int> Plot::getThresholdBounds()
+{
+    QVector<int> bounds;
+    bounds.append(thresholdPr->yValue());
+    bounds.append(thresholdSec->yValue());
+    qSort(bounds);
+    return bounds;
+}
+
 void Plot::resetMarkers()
 {
     for (int i = 1; i < markerVector.size(); i += 2)
@@ -189,6 +244,14 @@ void Plot::moveMarker(double position, bool prime)
         markerVector.at(markPairNmr - 1)->setValue(position, 0);
     else
         markerVector.at(markPairNmr)->setValue(position, 0);
+}
+
+void Plot::moveThreshold(double position, bool prime)
+{
+    if (prime)
+        thresholdPr->setValue(0, position);
+    else
+        thresholdSec->setValue(0, position);
 }
 
 void Plot::updateCurve(const QVector<double> &samplesPh)
