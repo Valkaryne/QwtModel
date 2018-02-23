@@ -1,9 +1,10 @@
 #include "plot.hpp"
 #include <algorithm>
 
-Plot::Plot(QWidget *parent)
+Plot::Plot(QWidget *parent, const QString objectName)
     : QwtPlot(parent)
 {
+    setObjectName(objectName);
     /* Canvas */
     QwtPlotCanvas *canvas = new QwtPlotCanvas;
     canvas->setBorderRadius(10);
@@ -38,6 +39,8 @@ Plot::Plot(QWidget *parent)
     curve2->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
     curve2->attach(this);
 
+    // TODO: Add maxHold feature
+
     /* Pickers */
     pickerMarkPr = new QwtPlotPicker(
                 QwtPlot::xBottom, QwtPlot::yLeft,
@@ -67,6 +70,15 @@ Plot::Plot(QWidget *parent)
         *new QColor(255,153,0), /* orange */
         *new QColor(255,170,204), /* rose */
     };
+
+    /* Zoomer */
+    zoomer = new QwtPlotZoomer(canvas);
+    zoomer->setRubberBandPen(QColor(Qt::darkGreen));
+    zoomer->setTrackerMode(QwtPlotPicker::AlwaysOn);
+    zoomer->setMousePattern(QwtEventPattern::MouseSelect2,
+                            Qt::RightButton, Qt::ControlModifier);
+
+    qDebug() << this->objectName();
 
     /* Other settings */
 
@@ -106,6 +118,11 @@ void Plot::setPickers(bool enable)
     pickerMarkSec->setEnabled(enable);
 }
 
+void Plot::setZoomer(bool enable)
+{
+    zoomer->setEnabled(enable);
+}
+
 void Plot::setCentralFrequency(double cntrFrequency)
 {
     if (this->cntrFrequency != cntrFrequency)
@@ -118,6 +135,16 @@ void Plot::setCentralFrequency(double cntrFrequency)
     setAxisScale(QwtPlot::xBottom, xleft, xright);
     // TODO: Set Zoom Base
     /* Set Zoom Base */
+    QStack<QRectF> stack = zoomer->zoomStack();
+    QRectF base;
+    if (this->objectName() == "phasePlot")
+        base = QRectF(QPointF(xleft, 0), QPointF(xright, 360));
+    else
+        base = QRectF(QPointF(xleft, 20), QPointF(xright, 140));
+    stack.clear();
+    stack.append(base);
+    zoomer->setZoomStack(stack);
+    zoomer->setZoomBase(base);
 }
 
 QwtPlotPicker* Plot::getMarkerPicker(bool prime)
@@ -126,6 +153,11 @@ QwtPlotPicker* Plot::getMarkerPicker(bool prime)
         return pickerMarkPr;
     else
         return pickerMarkSec;
+}
+
+QwtPlotZoomer* Plot::getZoomer()
+{
+    return zoomer;
 }
 
 QVector<int> Plot::getMarkerBounds()
@@ -182,4 +214,9 @@ void Plot::updateCurve(const QVector<double> &samplesAm1, const QVector<double> 
     curve1->setSamples(frequency, samplesAm1);
     curve2->setSamples(frequency, samplesAm2);
     replot();
+}
+
+void Plot::equalZoom(const QRectF &rect)
+{
+    setAxisScale(QwtPlot::xBottom, rect.bottomLeft().x(), rect.bottomRight().x());
 }

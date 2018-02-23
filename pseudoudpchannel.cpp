@@ -41,7 +41,7 @@ void PseudoUdpChannel::readPseudoDatagram()
     for (int i = 0; i < 4096; i++)
     {
         if (vecAm1.at(i) > 75)
-            vecPh.push_back(qrand() % 45 + 150);
+            vecPh.push_back(qrand() % (15 + i % 7) + 175 + i % 7);
         else
             vecPh.push_back(qrand() % 360);
     }

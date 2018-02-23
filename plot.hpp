@@ -21,7 +21,7 @@ class Plot : public QwtPlot
     Q_OBJECT
 
 public:
-    Plot(QWidget *parent);
+    Plot(QWidget *parent, const QString objectName);
 
     /* Hints for resize QwtPlot */
     QSize sizeHint() const { return QSize(700, 200); }
@@ -29,9 +29,11 @@ public:
     /* Setters */
     void setMarker(int number);
     void setPickers(bool enable);
+    void setZoomer(bool enable);
     void setCentralFrequency(double cntrFrequency);
     /* Getters */
     QwtPlotPicker* getMarkerPicker(bool prime);
+    QwtPlotZoomer* getZoomer();
     QVector<int> getMarkerBounds();
     /* Others */
     void resetMarkers();
@@ -40,6 +42,7 @@ public:
 public slots:
     void updateCurve(const QVector<double> &samplesPh);
     void updateCurve(const QVector<double> &samplesAm1, const QVector<double> &samplesAm2);
+    void equalZoom(const QRectF &rect);
 
 private:
     QwtPlotCurve *curve1;
@@ -48,6 +51,7 @@ private:
     QwtPlotPicker *pickerMarkSec;
     QwtPlotMarker *markerPr;
     QwtPlotMarker *markerSec;
+    QwtPlotZoomer   *zoomer;
 
     QVector<QwtPlotMarker*> markerVector;
     QVector<QColor> colors;

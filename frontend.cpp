@@ -19,15 +19,17 @@ FrontEnd::FrontEnd(QWidget *parent) :
     spectrumWaterfall->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     ui->spectrumLayout->addWidget(spectrumWaterfall);
 
-    spectrumPlot = new Plot(this);
+    spectrumPlot = new Plot(this, "spectrumPlot");
     spectrumPlot->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     ui->spectrumLayout->addSpacing(10);
     spLayout->addSpacing(12);
     spLayout->addWidget(spectrumPlot);
     ui->spectrumLayout->addLayout(spLayout);
     spectrumPlot->setPickers(false);
+    spectrumPlot->setZoomer(true);
+    spectrumPlot->setObjectName("spectrumPlot");
 
-    phasePlot = new Plot(this);
+    phasePlot = new Plot(this, "phasePlot");
     phasePlot->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     phLayout->addSpacing(12);
     phLayout->addWidget(phasePlot);
@@ -36,6 +38,8 @@ FrontEnd::FrontEnd(QWidget *parent) :
     phasePlot->setAxisTitle(QwtPlot::yLeft, "Phase");
     phasePlot->setAxisScale(QwtPlot::yLeft, 0, 360, 90);
     phasePlot->setPickers(false);
+    phasePlot->setZoomer(false);
+    phasePlot->setObjectName("phasePlot");
 
     polarPlot = new PolarPlot(this);
     polarPlot->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -60,6 +64,8 @@ FrontEnd::FrontEnd(QWidget *parent) :
             this, SLOT(leftClickOnCanvas(const QPoint &)));
     connect(spectrumPlot->getMarkerPicker(false), SIGNAL(appended(const QPoint &)),
             this, SLOT(rightClickOnCanvas(const QPoint &)));
+    connect(spectrumPlot->getZoomer(), SIGNAL(zoomed(const QRectF &)),
+            phasePlot, SLOT(equalZoom(const QRectF &)));
 }
 
 FrontEnd::~FrontEnd()
@@ -95,14 +101,16 @@ void FrontEnd::on_buttonGroupMode_buttonClicked(QAbstractButton *button)
     if (name == "Markers")
     {
         spectrumPlot->setPickers(true);
+        spectrumPlot->setZoomer(false);
     }
     else if (name == "Zoom")
     {
-
+        spectrumPlot->setZoomer(true);
+        spectrumPlot->setPickers(false);
     }
     else if (name == "Threshold")
     {
-
+        // TODO: Add thresholds feature
     }
 }
 
