@@ -13,6 +13,8 @@ public:
                         const QHostAddress &addressClt, quint16 portClt,
                         QObject *parent = 0);
 
+    void switchSocketState();
+
 signals:
     void samplesReceived(const QVector<double> samplesAm1, const QVector<double> samplesAm2,
                          const QVector<double> samplesPh);

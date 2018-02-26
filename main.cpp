@@ -4,7 +4,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    a.setPalette(Qt::lightGray);
+    //a.setPalette(QColor(190,245,116));
     FrontEnd w;
     w.show();
 
