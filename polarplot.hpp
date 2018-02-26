@@ -17,8 +17,14 @@ public:
     QSize sizeHint() const { return QSize(500, 500); }
     QSize minimumSizeHint() const { return QSize(500, 500); }
 
+    void clearDiagram();
+
+public slots:
+    void drawPhaseResponse(const double angle, const double radius);
+
 private:
     QwtPolarCurve *phaseMarker;
+    QwtPolarCurve *curv1;
 };
 
 #endif // POLARPLOT_HPP

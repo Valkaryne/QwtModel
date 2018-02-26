@@ -28,7 +28,7 @@ public:
                 xInterval |= sample.azimuth();
                 yInterval |= sample.radius();
             }
-            d_boundingRect = QRectF(xInterval.minValue(), yInterval.minValue(), xInterval.width(), yInterval.width());
+            //d_boundingRect = QRectF(xInterval.minValue(), yInterval.minValue(), xInterval.width(), yInterval.width());
         }
     }
 
@@ -108,4 +108,28 @@ PolarPlot::PolarPlot(QWidget *parent) :
     const double a1 = scaleDiv(QwtPolar::Azimuth)->upperBound();
     const double a2 = scaleDiv(QwtPolar::Azimuth)->lowerBound();
     setScale(QwtPolar::Azimuth, a1, a2, qAbs(a2 - a1) / 8.0);
+
+    /* Curves */
+    PolarCurveData *data1 = new PolarCurveData();
+    curv1 = new QwtPolarCurve();
+    curv1->setPen(QPen(Qt::red));
+    curv1->setStyle(QwtPolarCurve::NoCurve);
+    curv1->setSymbol(new QwtSymbol(QwtSymbol::XCross,
+                                   QBrush(Qt::red), QPen(Qt::red), QSize(4,4)));
+    curv1->setData(data1);
+    curv1->attach(this);
+}
+
+void PolarPlot::drawPhaseResponse(const double angle, const double radius)
+{
+    PolarCurveData *data = (PolarCurveData*)(curv1->data());
+    data->append(QwtPointPolar(angle, radius));
+    replot();
+}
+
+void PolarPlot::clearDiagram()
+{
+    PolarCurveData *data = (PolarCurveData*)(curv1->data());
+    data->clear();
+    replot();
 }
