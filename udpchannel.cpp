@@ -14,6 +14,11 @@ UdpChannel::UdpChannel(const QHostAddress &addressSrv, quint16 portSrv,
     connect(socket, SIGNAL(readyRead()), this, SLOT(readPendingDatagram()));
 }
 
+void UdpChannel::switchSocketState()
+{
+
+}
+
 void UdpChannel::readPendingDatagram()
 {
     while (socket->hasPendingDatagrams()) {
@@ -62,3 +67,5 @@ void UdpChannel::sendDatagram(const QVector<double> settings)
 
     socket->writeDatagram(toSend, addressSendTo, portSendTo);
 }
+
+

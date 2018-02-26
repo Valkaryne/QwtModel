@@ -36,10 +36,18 @@ private slots:
 
     /* Buttons */
     void on_applyBtn_clicked();
+    void on_setRangeBtn_clicked();
+    void on_plotRspBtn_clicked(bool checked);
+    void on_clearDiagramBtn_clicked();
 
     /* Button Groups */
     void on_buttonGroupMode_buttonClicked(QAbstractButton *button);
     void on_buttonGroupMarkers_buttonClicked(QAbstractButton *button);
+
+    /* Other */
+    void on_cbMaxHold_stateChanged(int arg1);
+    void on_exponentSpinBox_valueChanged(double arg1);
+    void on_isReal_stateChanged(int arg1);
 
 private:
     Ui::FrontEnd    *ui;

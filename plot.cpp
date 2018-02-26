@@ -39,7 +39,13 @@ Plot::Plot(QWidget *parent, const QString objectName)
     curve2->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
     curve2->attach(this);
 
-    // TODO: Add maxHold feature
+    curveMax = new QwtPlotCurve();
+    curveMax->setStyle(QwtPlotCurve::NoCurve);
+    curveMax->setSymbol(new QwtSymbol(QwtSymbol::Ellipse,
+                                      QBrush(Qt::gray), QPen(Qt::gray), QSize(2,2)));
+    curveMax->setRenderHint(QwtPlotItem::RenderAntialiased, true);
+    curveMax->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
+    curveMax->attach(this);
 
     /* Pickers */
     pickerMarkPr = new QwtPlotPicker(
@@ -111,11 +117,12 @@ Plot::Plot(QWidget *parent, const QString objectName)
     zoomer->setMousePattern(QwtEventPattern::MouseSelect2,
                             Qt::RightButton, Qt::ControlModifier);
 
-    qDebug() << this->objectName();
-
     /* Other settings */
+    for (int i = 0; i < 4096; i++)
+        maxSamples.append(0);
 
     this->cntrFrequency = 70;
+    this->expCoeff = 0.996;
 
     for(int i = 1; i < 6; i++)
         setMarker(i);
@@ -183,6 +190,20 @@ void Plot::setCentralFrequency(double cntrFrequency)
     stack.append(base);
     zoomer->setZoomStack(stack);
     zoomer->setZoomBase(base);
+}
+
+void Plot::setMaxHold(bool holdOn)
+{
+    if (holdOn)
+        curveMax->attach(this);
+    else
+        curveMax->detach();
+}
+
+void Plot::setExpCoefficient(double expCoeff)
+{
+    if (this->expCoeff != expCoeff)
+        this->expCoeff = expCoeff;
 }
 
 QwtPlotPicker* Plot::getMarkerPicker(bool prime)
@@ -274,8 +295,17 @@ void Plot::updateCurve(const QVector<double> &samplesAm1, const QVector<double> 
     for (double i = cntrFrequency - SHIFT; i < size * INCR + (cntrFrequency - SHIFT); i += INCR)
         frequency.push_back(i);
 
+    for (int j = 0; j < samplesAm1.size(); j++)
+    {
+        if (samplesAm1.value(j) > maxSamples.value(j))
+            maxSamples.replace(j, expCoeff * samplesAm1.value(j) + (1 - expCoeff) * maxSamples.value(j) + 5);
+        else
+            maxSamples.replace(j, (1 - expCoeff) * samplesAm1.value(j) + expCoeff * maxSamples.value(j));
+    }
+
     curve1->setSamples(frequency, samplesAm1);
     curve2->setSamples(frequency, samplesAm2);
+    curveMax->setSamples(frequency, maxSamples);
     replot();
 }
 

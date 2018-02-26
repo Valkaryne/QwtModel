@@ -115,6 +115,35 @@ void FrontEnd::on_applyBtn_clicked()
     qDebug() << "Thresholds: " << thresholds;
 }
 
+void FrontEnd::on_setRangeBtn_clicked()
+{
+    QVector<int> bounds = spectrumPlot->getMarkerBounds();
+    backEnd->setRangeBounds(bounds.at(0), bounds.at(1));
+}
+
+void FrontEnd::on_plotRspBtn_clicked(bool checked)
+{
+    if (checked)
+    {
+        connect(pseudoUdpChannel, SIGNAL(pseudoSamplesReceived(const QVector<double>,const QVector<double>,const QVector<double>)),
+                backEnd, SLOT(responsePointsHandler(const QVector<double>,const QVector<double>,const QVector<double>)));
+        connect(backEnd, SIGNAL(phaseResponsePointsReady(const double, const double)),
+                polarPlot, SLOT(drawPhaseResponse(const double, const double)));
+    }
+    else
+    {
+        disconnect(pseudoUdpChannel, SIGNAL(pseudoSamplesReceived(const QVector<double>,const QVector<double>,const QVector<double>)),
+                   backEnd, SLOT(responsePointsHandler(const QVector<double>,const QVector<double>,const QVector<double>)));
+        disconnect(backEnd, SIGNAL(phaseResponsePointsReady(const double, const double)),
+                   polarPlot, SLOT(drawPhaseResponse(const double, const double)));
+    }
+}
+
+void FrontEnd::on_clearDiagramBtn_clicked()
+{
+    polarPlot->clearDiagram();
+}
+
 void FrontEnd::on_buttonGroupMode_buttonClicked(QAbstractButton *button)
 {
     QString name = button->text();
@@ -142,4 +171,21 @@ void FrontEnd::on_buttonGroupMarkers_buttonClicked(QAbstractButton *button)
 {
     int number = button->text().toInt();
     spectrumPlot->setMarker(number);
+}
+
+void FrontEnd::on_cbMaxHold_stateChanged(int arg1)
+{
+    if (arg1 != 0)
+        spectrumPlot->setMaxHold(true);
+    else
+        spectrumPlot->setMaxHold(false);
+}
+
+void FrontEnd::on_exponentSpinBox_valueChanged(double arg1)
+{
+    spectrumPlot->setExpCoefficient(arg1);
+}
+
+void FrontEnd::on_isReal_stateChanged(int arg1)
+{
 }

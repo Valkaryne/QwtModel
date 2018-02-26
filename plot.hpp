@@ -32,6 +32,8 @@ public:
     void setThresholdPickers(bool enable);
     void setZoomer(bool enable);
     void setCentralFrequency(double cntrFrequency);
+    void setMaxHold(bool holdOn);
+    void setExpCoefficient(double expCoeff);
     /* Getters */
     QwtPlotPicker* getMarkerPicker(bool prime);
     QwtPlotPicker* getThreshPicker(bool prime);
@@ -51,6 +53,7 @@ public slots:
 private:
     QwtPlotCurve *curve1;
     QwtPlotCurve *curve2;
+    QwtPlotCurve *curveMax;
     QwtPlotPicker *pickerMarkPr;
     QwtPlotPicker *pickerMarkSec;
     QwtPlotPicker *pickerThrPr;
@@ -63,8 +66,10 @@ private:
 
     QVector<QwtPlotMarker*> markerVector;
     QVector<QColor> colors;
+    QVector<double> maxSamples;
 
     int markPairNmr;
+    double expCoeff;
     double cntrFrequency;
 };
 
